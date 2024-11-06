@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "TechConnect Innovators",
+  title: "Tapify",
   description: "Premium NFC Solutions for Modern Networking",
 };
 

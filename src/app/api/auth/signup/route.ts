@@ -1,3 +1,4 @@
+// app/api/auth/signup/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { connectDB } from '@/lib/mongodb';
@@ -20,16 +21,9 @@ export async function POST(request: NextRequest) {
     if (!result.success) {
       // Log the validation errors
       console.error('Validation failed:', result.error.errors);
-      return new NextResponse(
-        JSON.stringify({
-          error: result.error.errors[0].message,
-        }),
-        {
-          status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      return NextResponse.json(
+        { error: result.error.errors[0].message },
+        { status: 400 }
       );
     }
 
@@ -43,14 +37,9 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       console.log('Email already registered:', email);
-      return new NextResponse(
-        JSON.stringify({ error: 'Email already registered' }),
-        {
-          status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      return NextResponse.json(
+        { error: 'Email already registered' },
+        { status: 400 }
       );
     }
 
@@ -72,32 +61,20 @@ export async function POST(request: NextRequest) {
     console.log('User created successfully:', userWithoutPassword);
 
     // Return success response with user info (without password)
-    return new NextResponse(
-      JSON.stringify({
+    return NextResponse.json(
+      {
         message: 'User created successfully',
         user: userWithoutPassword,
-      }),
-      {
-        status: 201,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+      },
+      { status: 201 }
     );
   } catch (error) {
     // Log the error for debugging
     console.error('Signup error:', error);
 
-    return new NextResponse(
-      JSON.stringify({
-        error: 'Internal server error',
-      }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
     );
   }
 }

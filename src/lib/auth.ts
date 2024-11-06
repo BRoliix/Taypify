@@ -1,80 +1,56 @@
 // lib/auth.ts
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
 import { connectDB } from '@/lib/mongodb';
 import { User } from '@/models/user';
-import bcrypt from 'bcryptjs';
+
+// Function to find user by email
+async function findUserByEmail(email: string) {
+  await connectDB();
+  const user = await User.findOne({ email });
+  return user;
+}
+
+// Function to validate password
+async function validatePassword(plainPassword: string, hashedPassword: string) {
+  return await bcrypt.compare(plainPassword, hashedPassword);
+}
 
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: 'jwt', // Correctly typed session strategy
+  },
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        email: { label: "Email", type: "email", placeholder: "you@example.com" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error('Please enter both email and password');
+        if (!credentials) {
+          throw new Error("No credentials provided");
         }
 
-        try {
-          await connectDB();
+        const { email, password } = credentials;
 
-          const user = await User.findOne({ 
-            email: credentials.email.toLowerCase() 
-          }).select('+password');
+        // Find user by email
+        const user = await findUserByEmail(email);
 
-          if (!user || !user.password) {
-            throw new Error('Invalid credentials');
-          }
-
-          const isPasswordMatch = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
-
-          if (!isPasswordMatch) {
-            throw new Error('Invalid credentials');
-          }
-
+        if (user && (await validatePassword(password, user.password))) {
+          // Return the user object with id as a string
           return {
-            id: user._id.toString(),
-            email: user.email,
+            id: String(user._id), // Convert id to string
             name: user.name,
+            email: user.email,
           };
-        } catch (error) {
-          console.error('Auth error:', error);
-          throw error;
         }
-      }
-    })
+
+        // If login fails, return null
+        return null;
+      },
+    }),
   ],
-  pages: {
-    signIn: '/login',
-    error: '/login',
-  },
-  session: {
-    strategy: 'jwt',
-    maxAge: 24 * 60 * 60, // 24 hours
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.email = token.email as string;
-        session.user.name = token.name as string;
-      }
-      return session;
-    }
-  },
   secret: process.env.NEXTAUTH_SECRET,
 };

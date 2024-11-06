@@ -1,49 +1,42 @@
 // app/api/auth/signup/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import bcrypt from 'bcryptjs';
 import { connectDB } from '@/lib/mongodb';
 import { User } from '@/models/user';
 import { z } from 'zod';
 
-// Validation schema
+// Define a schema for validation
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(50),
   email: z.string().email('Invalid email format'),
   password: z.string().min(6, 'Password must be at least 6 characters')
 });
 
-export async function POST(request: NextRequest) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
     // Parse and validate request body
-    const body = await request.json();
-    const result = signupSchema.safeParse(body);
-
+    const result = signupSchema.safeParse(req.body);
+    
     if (!result.success) {
-      // Log the validation errors
-      console.error('Validation failed:', result.error.errors);
-      return NextResponse.json(
-        { error: result.error.errors[0].message },
-        { status: 400 }
-      );
+      return res.status(400).json({ error: result.error.errors[0].message });
     }
 
     const { name, email, password } = result.data;
 
-    // Connect to the database
     await connectDB();
 
-    // Check if the email is already taken
+    // Check for existing user
     const existingUser = await User.findOne({ email: email.toLowerCase() });
-
+    
     if (existingUser) {
-      console.log('Email already registered:', email);
-      return NextResponse.json(
-        { error: 'Email already registered' },
-        { status: 400 }
-      );
+      return res.status(400).json({ error: 'Email already registered' });
     }
 
-    // Hash the password and create the user
+    // Hash password and create user
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = await User.create({
       name: name.trim(),
@@ -51,30 +44,16 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
     });
 
-    // Create a sanitized user object (without password)
+    // Return user data without password
     const userWithoutPassword = {
       _id: user._id,
       name: user.name,
-      email: user.email,
+      email: user.email
     };
 
-    console.log('User created successfully:', userWithoutPassword);
-
-    // Return success response with user info (without password)
-    return NextResponse.json(
-      {
-        message: 'User created successfully',
-        user: userWithoutPassword,
-      },
-      { status: 201 }
-    );
+    return res.status(201).json({ message: 'User created successfully', user: userWithoutPassword });
   } catch (error) {
-    // Log the error for debugging
     console.error('Signup error:', error);
-
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }

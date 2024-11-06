@@ -24,6 +24,12 @@ export default function SignupPage() {
     setError('');
     setLoading(true);
 
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
@@ -32,13 +38,13 @@ export default function SignupPage() {
 
     try {
       await signup({
-        name: formData.name,
-        email: formData.email,
+        name: formData.name.trim(),
+        email: formData.email.toLowerCase().trim(),
         password: formData.password
       });
       router.push('/dashboard');
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Something went wrong');
+    } catch (error: any) {
+      setError(error?.message || 'Failed to create account');
     } finally {
       setLoading(false);
     }

@@ -1,22 +1,21 @@
 // contexts/AuthContext.tsx
-import { createContext, useContext, ReactNode, useState } from 'react';
+'use client';
+import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 
-// Define the User type
 interface User {
   _id: string;
   name: string;
   email: string;
 }
 
-// Define the AuthContext type
 interface AuthContextType {
   user: User | null;
   signup: (data: SignupData) => Promise<void>;
   login: (data: LoginData) => Promise<void>;
   logout: () => Promise<void>;
+  loading: boolean;
 }
 
-// Define data types for auth functions
 interface SignupData {
   name: string;
   email: string;
@@ -28,24 +27,39 @@ interface LoginData {
   password: string;
 }
 
-// Create the context with a default value
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  signup: async () => {},
-  login: async () => {},
-  logout: async () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Create the provider component
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await fetch('https://tapify-innovators.vercel.app/api/auth/me', {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      }
+    } catch (error) {
+      console.error('Auth status check failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const signup = async (data: SignupData) => {
-    const response = await fetch('/api/auth/signup', {
+    const response = await fetch('https://tapify-innovators.vercel.app/api/auth/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
 
@@ -55,18 +69,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(result.error || 'Failed to create account');
     }
 
-    // Set user if the response includes user data
     if (result.user) {
       setUser(result.user);
     }
   };
 
   const login = async (data: LoginData) => {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch('https://tapify-innovators.vercel.app/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
 
@@ -83,8 +97,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', {
+      await fetch('https://tapify-innovators.vercel.app/api/auth/logout', {
         method: 'POST',
+        credentials: 'include',
       });
       setUser(null);
     } catch (error) {
@@ -94,13 +109,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, signup, login, logout }}>
-      {children}
+    <AuthContext.Provider value={{ user, signup, login, logout, loading }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
 
-// Custom hook to use the auth context
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {

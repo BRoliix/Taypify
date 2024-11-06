@@ -15,7 +15,7 @@ export default function WhoAreWePage() {
               Who Are We?
             </h1>
             <p className="text-lg text-blue-100 max-w-2xl mx-auto">
-              Meet the team behind TechConnect Innovators, dedicated to revolutionizing networking through NFC technology
+              Meet the team behind Tapify Innovators, dedicated to revolutionizing networking through NFC technology
             </p>
           </div>
         </div>
@@ -35,7 +35,7 @@ export default function WhoAreWePage() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
           <p className="text-gray-600 max-w-3xl mx-auto mb-8">
-            At TechConnect Innovators, we're committed to revolutionizing professional networking through innovative NFC solutions. Our team combines expertise in technology, design, and business to create products that make connecting easier and more efficient.
+            At Tapify Innovators, we're committed to revolutionizing professional networking through innovative NFC solutions. Our team combines expertise in technology, design, and business to create products that make connecting easier and more efficient.
           </p>
           <Link
             href="/contact"

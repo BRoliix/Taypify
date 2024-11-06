@@ -1,8 +1,8 @@
 // src/components/Navbar.tsx
 'use client';
-import { useState } from 'react';
-import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +13,7 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="text-2xl font-bold text-blue-600">
-              TechConnect Innovators
+              Tapify Innovators
             </Link>
           </div>
           

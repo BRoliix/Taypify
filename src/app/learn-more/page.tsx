@@ -1,6 +1,6 @@
 // src/app/learn-more/page.tsx
 'use client';
-import { Rocket, Sparkles, Timer, Users, Zap, Star } from 'lucide-react';
+import { Rocket, Sparkles, Star, Timer, Zap } from 'lucide-react';
 import Link from 'next/link';
 
 const features = [
@@ -68,7 +68,7 @@ export default function LearnMorePage() {
               The Future of Professional Networking
             </h1>
             <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-              Join the waitlist for TechConnect's revolutionary NFC business cards
+              Join the waitlist for Tapify's revolutionary NFC business cards
             </p>
           </div>
         </div>
@@ -79,7 +79,7 @@ export default function LearnMorePage() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Why Choose TechConnect?
+              Why Choose Tapify?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Be among the first to revolutionize your networking experience

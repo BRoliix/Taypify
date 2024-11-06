@@ -2,7 +2,7 @@ export const team = [
     {
       name: 'Dawood Bin Shabir',
       role: 'Founder & CEO',
-      bio: 'Leading the vision and strategy for TechConnect Innovators.',
+      bio: 'Leading the vision and strategy for Tapify Innovators.',
       image: '/assets/dawood.jpeg',
       social: {
         linkedin:'https://www.linkedin.com/in/dawood-bin-shabir-984633289/',
@@ -36,7 +36,7 @@ export const team = [
       image: '/assets/rayyan.jpeg',
       social: {
         linkedin: 'https://linkedin.com/in/rayyanbintaher',
-        email: 'rayyan@techconnect.com'
+        email: 'rayyan@Tapify.com'
       }
     }
   ];

@@ -9,7 +9,7 @@ import { useState } from 'react';
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const { user} = useUser(); 
+  const { user } = useUser(); // Get user info from Auth0
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -17,7 +17,6 @@ const Header = () => {
     { name: 'Pricing', href: '/pricing' },
     { name: 'Who Are We?', href: '/who-are-we' },
   ];
-
 
   return (
     <header className="fixed w-full bg-white border-b z-50">
@@ -52,6 +51,8 @@ const Header = () => {
                 >
                   Dashboard
                 </Link>
+                {/* Logout Button */}
+                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
                 <a
                   href="/api/auth/logout"
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -61,18 +62,22 @@ const Header = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-4">
-                <Link
+                {/* Sign In Button */}
+                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                <a
                   href="/api/auth/login"
                   className="text-gray-500 hover:text-gray-900 transition-colors"
                 >
                   Sign in
-                </Link>
-                <Link
-                  href="/api/auth/login" // You can update this to the registration/signup page if needed
+                </a>
+                {/* Get Started Button */}
+                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                <a
+                  href="/api/auth/login?screen_hint=signup" // Redirect to signup page if needed
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Get Started
-                </Link>
+                </a>
               </div>
             )}
           </nav>
@@ -116,6 +121,8 @@ const Header = () => {
                   >
                     Dashboard
                   </Link>
+                  {/* Logout Button */}
+                  {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
                   <a
                     href="/api/auth/logout"
                     className="block w-full text-left px-4 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-50"
@@ -126,20 +133,24 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <Link
+                  {/* Sign In Button */}
+                  {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                  <a
                     href="/api/auth/login"
                     className="block px-4 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                     onClick={() => setIsOpen(false)}
                   >
                     Sign in
-                  </Link>
-                  <Link
-                    href="/api/auth/login" // Again, this could be a different page for sign up
+                  </a>
+                  {/* Get Started Button */}
+                  {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                  <a
+                    href="/api/auth/login?screen_hint=signup" // Redirect to signup page if needed
                     className="block px-4 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                     onClick={() => setIsOpen(false)}
                   >
                     Get Started
-                  </Link>
+                  </a>
                 </>
               )}
             </div>

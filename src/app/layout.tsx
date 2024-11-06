@@ -1,8 +1,7 @@
 import Header from '@/components/Header';
-import ClientProvider from '@/components/providers/ClientProvider';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { UserProvider } from '@auth0/nextjs-auth0/client'; // Import UserProvider for Auth0
+import { UserProvider } from '@auth0/nextjs-auth0/client'; 
 import './globals.css';
 
 // Load Inter font with Latin subset
@@ -26,14 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <UserProvider>
-          <ClientProvider>
+        
             <Header />
-            
+            <UserProvider>
             <main className="min-h-screen pt-16">
               {children}
             </main>
-          </ClientProvider>
         </UserProvider>
       </body>
     </html>

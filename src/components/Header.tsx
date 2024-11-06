@@ -9,7 +9,7 @@ import { useState } from 'react';
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const { user, error, isLoading } = useUser(); // Get user info from Auth0
+  const { user} = useUser(); 
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -18,7 +18,6 @@ const Header = () => {
     { name: 'Who Are We?', href: '/who-are-we' },
   ];
 
-  if (isLoading) return null; // Optionally handle loading state
 
   return (
     <header className="fixed w-full bg-white border-b z-50">
@@ -62,18 +61,18 @@ const Header = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-4">
-                <a
+                <Link
                   href="/api/auth/login"
                   className="text-gray-500 hover:text-gray-900 transition-colors"
                 >
                   Sign in
-                </a>
-                <a
-                  href="/api/auth/login"
+                </Link>
+                <Link
+                  href="/api/auth/login" // You can update this to the registration/signup page if needed
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Get Started
-                </a>
+                </Link>
               </div>
             )}
           </nav>
@@ -127,20 +126,20 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <a
+                  <Link
                     href="/api/auth/login"
                     className="block px-4 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                     onClick={() => setIsOpen(false)}
                   >
                     Sign in
-                  </a>
-                  <a
-                    href="/api/auth/login"
+                  </Link>
+                  <Link
+                    href="/api/auth/login" // Again, this could be a different page for sign up
                     className="block px-4 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                     onClick={() => setIsOpen(false)}
                   >
                     Get Started
-                  </a>
+                  </Link>
                 </>
               )}
             </div>

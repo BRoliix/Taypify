@@ -1,21 +1,12 @@
-// app/page.tsx
 'use client';
 import { ArrowRight, Shield, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
 
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  const user = session?.user;
+ 
 
   return (
     <div className="space-y-20">
@@ -24,10 +15,10 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 opacity-90" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
           <div className="max-w-3xl space-y-8">
-            {user ? (
+            {isAuthenticated ? (
               <>
                 <h1 className="text-5xl font-bold leading-tight">
-                  Welcome back, {user.name}!
+                  Welcome back, {user?.name}!
                 </h1>
                 <p className="text-xl">
                   Manage your digital presence and networking connections with ease.
@@ -45,6 +36,12 @@ export default function Home() {
                   >
                     Manage Cards
                   </Link>
+                  <button 
+                    onClick={() => logout({ returnTo: window.location.origin } as any)} 
+                    className="border border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-blue-600"
+                  >
+                    Log Out
+                  </button>
                 </div>
               </>
             ) : (
@@ -57,12 +54,12 @@ export default function Home() {
                   Perfect for professionals and businesses.
                 </p>
                 <div className="flex space-x-4">
-                  <Link 
-                    href="/login" 
+                  <button 
+                    onClick={() => loginWithRedirect()} 
                     className="bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-gray-100 inline-flex items-center"
                   >
                     Get Started <ArrowRight className="ml-2" />
-                  </Link>
+                  </button>
                   <Link 
                     href="/learn-more" 
                     className="border border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-blue-600"
@@ -81,10 +78,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              {user ? 'Your NFC Solutions' : 'Why Choose Our NFC Solutions?'}
+              {isAuthenticated ? 'Your NFC Solutions' : 'Why Choose Our NFC Solutions?'}
             </h2>
             <p className="text-xl text-gray-600">
-              {user 
+              {isAuthenticated 
                 ? 'Make the most of your digital networking tools'
                 : 'Experience the future of networking with our cutting-edge NFC technology'
               }
@@ -127,7 +124,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section - Only show if not authenticated */}
-      {!user && (
+      {!isAuthenticated && (
         <section className="bg-gray-50 py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
@@ -135,12 +132,12 @@ export default function Home() {
               Join thousands of professionals already using our NFC solutions
             </p>
             <div className="flex justify-center space-x-4">
-              <Link 
-                href="/signup" 
+              <button 
+                onClick={() => loginWithRedirect()}
                 className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700"
               >
                 Create Account
-              </Link>
+              </button>
               <Link 
                 href="/pricing" 
                 className="border border-blue-600 text-blue-600 px-8 py-3 rounded-lg hover:bg-blue-50"
@@ -153,7 +150,7 @@ export default function Home() {
       )}
 
       {/* Quick Actions - Only show if authenticated */}
-      {user && (
+      {isAuthenticated && (
         <section className="bg-gray-50 py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">

@@ -1,6 +1,6 @@
-// components/Header.tsx
 'use client';
-import { signOut, useSession } from 'next-auth/react';
+
+import { useUser } from '@auth0/nextjs-auth0/client'; // Use Auth0's useUser hook
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -9,8 +9,7 @@ import { useState } from 'react';
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const { data: session, status } = useSession();
-  const user = session?.user;
+  const { user, error, isLoading } = useUser(); // Get user info from Auth0
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -18,6 +17,8 @@ const Header = () => {
     { name: 'Pricing', href: '/pricing' },
     { name: 'Who Are We?', href: '/who-are-we' },
   ];
+
+  if (isLoading) return null; // Optionally handle loading state
 
   return (
     <header className="fixed w-full bg-white border-b z-50">
@@ -52,27 +53,27 @@ const Header = () => {
                 >
                   Dashboard
                 </Link>
-                <button
-                  onClick={() => signOut()}
+                <a
+                  href="/api/auth/logout"
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Logout
-                </button>
+                </a>
               </div>
             ) : (
               <div className="flex items-center space-x-4">
-                <Link
-                  href="/login"
+                <a
+                  href="/api/auth/login"
                   className="text-gray-500 hover:text-gray-900 transition-colors"
                 >
                   Sign in
-                </Link>
-                <Link
-                  href="/signup"
+                </a>
+                <a
+                  href="/api/auth/login"
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Get Started
-                </Link>
+                </a>
               </div>
             )}
           </nav>
@@ -116,32 +117,30 @@ const Header = () => {
                   >
                     Dashboard
                   </Link>
-                  <button
-                    onClick={() => {
-                      signOut();
-                      setIsOpen(false);
-                    }}
+                  <a
+                    href="/api/auth/logout"
                     className="block w-full text-left px-4 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={() => setIsOpen(false)}
                   >
                     Logout
-                  </button>
+                  </a>
                 </>
               ) : (
                 <>
-                  <Link
-                    href="/login"
+                  <a
+                    href="/api/auth/login"
                     className="block px-4 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                     onClick={() => setIsOpen(false)}
                   >
                     Sign in
-                  </Link>
-                  <Link
-                    href="/signup"
+                  </a>
+                  <a
+                    href="/api/auth/login"
                     className="block px-4 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                     onClick={() => setIsOpen(false)}
                   >
                     Get Started
-                  </Link>
+                  </a>
                 </>
               )}
             </div>

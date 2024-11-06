@@ -1,56 +1,31 @@
-import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import { connectDB } from '@/lib/mongodb';
-import { User } from '@/models/user';
-import { z } from 'zod';
+'use client';
 
-// Define a schema for validation
-const signupSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters').max(50),
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
+import { useRouter } from 'next/navigation';
 
-// POST handler for signup
-export async function POST(request: Request) {
-  try {
-    // Parse and validate request body
-    const body = await request.json();
-    const result = signupSchema.safeParse(body);
-    
-    if (!result.success) {
-      return NextResponse.json({ error: result.error.errors[0].message }, { status: 400 });
-    }
+export default function SignupPage() {
+  const router = useRouter();
 
-    const { name, email, password } = result.data;
+  const handleSignup = () => {
+    // Redirect to Auth0's signup page (Universal Login with signup hint)
+    router.push('/api/auth/login?screen_hint=signup');
+  };
 
-    await connectDB();
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Create your account
+          </h2>
+        </div>
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    
-    if (existingUser) {
-      return NextResponse.json({ error: 'Email already registered' }, { status: 400 });
-    }
-
-    // Hash password and create user
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = await User.create({
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
-      password: hashedPassword,
-    });
-
-    // Return user data without password
-    const userWithoutPassword = {
-      _id: newUser._id,
-      name: newUser.name,
-      email: newUser.email,
-    };
-
-    return NextResponse.json({ message: 'User created successfully', user: userWithoutPassword }, { status: 201 });
-  } catch (error) {
-    console.error('Signup error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
+        <button
+          onClick={handleSignup}
+          className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+        >
+          Get Started with Auth0
+        </button>
+      </div>
+    </div>
+  );
 }

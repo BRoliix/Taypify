@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
 
 function getMongoURI(): string {
-  const uri = process.env.MONGODB_URI;
+  const uri = process.env.DATABASE_URL;
   if (!uri) {
-    throw new Error('Please define the MONGODB_URI environment variable');
+    throw new Error('Please define the DATABASE_URL environment variable');
   }
   return uri;
 }
 
-const MONGODB_URI = getMongoURI();
+const DATABASE_URL = getMongoURI();
 
 export async function connectDB() {
   try {
@@ -16,7 +16,7 @@ export async function connectDB() {
       return;
     }
 
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(DATABASE_URL);
     console.log('MongoDB connected successfully');
   } catch (error) {
     console.error('MongoDB connection error:', error);

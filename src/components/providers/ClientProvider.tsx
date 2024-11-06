@@ -1,14 +1,10 @@
-// components/ClientProvider.tsx
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { ReactNode } from 'react';
+import { UserProvider } from '@auth0/nextjs-auth0/client'; // Use Auth0's UserProvider for global auth state management
 
-export default function ClientProvider({ children }: { children: ReactNode }) {
+export default function ClientProvider({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
-      <AuthProvider>{children}</AuthProvider> {/* Wrap everything in AuthProvider */}
-    </SessionProvider>
+    // Wrap your entire app with UserProvider to manage authentication state globally.
+    <UserProvider>{children}</UserProvider>
   );
 }

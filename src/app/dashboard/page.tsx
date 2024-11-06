@@ -1,23 +1,38 @@
 'use client';
+
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useUser } from '@auth0/nextjs-auth0/client'; // Import Auth0's useUser hook
 import { CreditCard, ChevronRight, Settings, Users } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, error, isLoading } = useUser(); // Get user info from Auth0
   const router = useRouter();
+
+  // Handle loading and error states
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  // If no user is logged in, redirect to login page
+  if (!user) {
+    router.push('/api/auth/login');
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600">Manage your NFC cards and view analytics</p>
         </div>
 
+        {/* Quick Stats */}
         <div className="grid md:grid-cols-3 gap-6">
-          {/* Quick Stats */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium">Active Cards</h3>

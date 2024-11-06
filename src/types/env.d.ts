@@ -3,10 +3,10 @@ declare global {
       interface ProcessEnv {
         NEXT_PUBLIC_JWT_SECRET: string;
         JWT_SECRET: string;
-        MONGODB_URI: string;
+        DATABASE_URL: string;
         NODE_ENV: 'development' | 'production' | 'test';
       }
     }
   }
   
-  export {};
+  export { };

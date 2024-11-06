@@ -25,12 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        
-            <Header />
-            <UserProvider>
-            <main className="min-h-screen pt-16">
-              {children}
-            </main>
+        {/* Wrap everything inside the UserProvider */}
+        <UserProvider>
+          <Header />
+          <main className="min-h-screen pt-16">
+            {children}
+          </main>
         </UserProvider>
       </body>
     </html>

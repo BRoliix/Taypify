@@ -2,7 +2,7 @@ export const team = [
     {
       name: 'Dawood Bin Shabir',
       role: 'Founder & CEO',
-      bio: 'Leading the vision and strategy for Tapify Innovators.',
+      bio: 'Leading the vision and strategy for Tapify Innovator.',
       image: '/assets/dawood.jpeg',
       social: {
         linkedin:'https://www.linkedin.com/in/dawood-bin-shabir-984633289/',

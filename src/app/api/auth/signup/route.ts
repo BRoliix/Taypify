@@ -14,9 +14,8 @@ const signupSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Parse and validate request body
     const body = await request.json();
-    
-    // Validate request body
     const result = signupSchema.safeParse(body);
     
     if (!result.success) {
@@ -26,7 +25,9 @@ export async function POST(request: NextRequest) {
         }), 
         { 
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json',
+          }
         }
       );
     }
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     await connectDB();
 
-    // Check existing user
+    // Check for existing user
     const existingUser = await User.findOne({ 
       email: email.toLowerCase() 
     });
@@ -45,29 +46,38 @@ export async function POST(request: NextRequest) {
         JSON.stringify({ error: 'Email already registered' }), 
         { 
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json',
+          }
         }
       );
     }
 
-    // Hash password
+    // Hash password and create user
     const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create user
     const user = await User.create({
-      name,
-      email: email.toLowerCase(),
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
       password: hashedPassword,
     });
+
+    // Create sanitized user object (without password)
+    const userWithoutPassword = {
+      _id: user._id,
+      name: user.name,
+      email: user.email
+    };
 
     return new NextResponse(
       JSON.stringify({ 
         message: 'User created successfully',
-        userId: user._id 
+        user: userWithoutPassword 
       }), 
       { 
         status: 201,
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+        }
       }
     );
   } catch (error) {
@@ -78,7 +88,9 @@ export async function POST(request: NextRequest) {
       }), 
       { 
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+        }
       }
     );
   }

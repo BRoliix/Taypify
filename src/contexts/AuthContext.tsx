@@ -2,6 +2,7 @@
 'use client';
 import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 
+// Define types
 interface User {
   _id: string;
   name: string;
@@ -10,10 +11,10 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  loading: boolean;
   signup: (data: SignupData) => Promise<void>;
   login: (data: LoginData) => Promise<void>;
   logout: () => Promise<void>;
-  loading: boolean;
 }
 
 interface SignupData {
@@ -27,7 +28,14 @@ interface LoginData {
   password: string;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Create context with default values
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+  signup: async () => {},
+  login: async () => {},
+  logout: async () => {},
+});
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -39,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch('https://tapify-innovators.vercel.app/api/auth/me', {
+      const response = await fetch('/api/auth/me', {
         credentials: 'include'
       });
       if (response.ok) {
@@ -54,62 +62,84 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signup = async (data: SignupData) => {
-    const response = await fetch('https://tapify-innovators.vercel.app/api/auth/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(data),
-    });
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          name: data.name.trim(),
+          email: data.email.toLowerCase().trim(),
+          password: data.password
+        }),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to create account');
-    }
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create account');
+      }
 
-    if (result.user) {
-      setUser(result.user);
+      if (result.user) {
+        setUser(result.user);
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      throw error;
     }
   };
 
   const login = async (data: LoginData) => {
-    const response = await fetch('https://tapify-innovators.vercel.app/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(data),
-    });
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: data.email.toLowerCase().trim(),
+          password: data.password
+        }),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to login');
-    }
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to login');
+      }
 
-    if (result.user) {
-      setUser(result.user);
+      if (result.user) {
+        setUser(result.user);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     }
   };
 
   const logout = async () => {
     try {
-      await fetch('https://tapify-innovators.vercel.app/api/auth/logout', {
+      const response = await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to logout');
+      }
+
       setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
-      throw new Error('Failed to logout');
+      throw error;
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, signup, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, loading, signup, login, logout }}>
       {!loading && children}
     </AuthContext.Provider>
   );

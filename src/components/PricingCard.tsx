@@ -31,7 +31,7 @@ interface PricingCardProps {
                   {plan.price.toFixed(2)}
                   <span className="text-black text-base font-normal">/{plan.billing}</span>
                 </div>
-        <ul className="space-y-4 mb-8 flex-grow">
+        <ul className="space-y-4 mb-8 flex-grow" > 
           {plan.features.map((feature, index) => (
             <li key={index} className="flex items-center text-gray-600">
               <svg
